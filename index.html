@@ -12,11 +12,10 @@
     <button onclick="abrirTodo()">EJECUTAR ENTORNO DE ESTUDIO</button>
 
     <script>
-    // Función para crear el retraso 
     const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     async function abrirTodo() {
-        const urls = [
+        let urls = [
             'https://campus2026.unahur.edu.ar/my/courses.php',
             'https://www.wolframalpha.com/',
             'https://gemini.google.com',
@@ -24,9 +23,16 @@
             'https://mail.google.com'
         ];
 
+        const esMobile = window.innerWidth <= 768;
+
+        if (esMobile) {
+            urls.reverse(); 
+            console.log("Modo Mobile: Lista invertida.");
+        }
+
         for (const url of urls) {
             window.open(url, '_blank');
-            // Espera antes de abrir la siguiente
+            // Unificamos a 300ms para mayor estabilidad en cualquier plataforma
             await esperar(300); 
         }
     }
