@@ -17,16 +17,17 @@
 
     async function abrirTodo() {
         const urls = [
-            'https://drive.google.com',
             'https://campus2026.unahur.edu.ar/my/courses.php',
+            'https://www.wolframalpha.com/',
             'https://gemini.google.com',
+            'https://drive.google.com',
             'https://mail.google.com'
         ];
 
         for (const url of urls) {
             window.open(url, '_blank');
-            // Espera 1000 milisegundos (1 segundo) antes de abrir la siguiente
-            await esperar(1000); 
+            // Espera antes de abrir la siguiente
+            await esperar(300); 
         }
     }
 </script>
