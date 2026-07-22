@@ -1,41 +1,1001 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Framework de Estudio</title>
-    <style>
-        body { background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        button { padding: 20px; font-size: 1.2rem; cursor: pointer; background: #333; color: #0f0; border: 1px solid #0f0; border-radius: 8px; }
-        button:hover { background: #0f0; color: #000; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de cursada — Tecnicatura / Licenciatura en Informática</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151a;
+    --panel:#1a1e26;
+    --panel-2:#1f2430;
+    --border:#2b3140;
+    --text:#e9e7e0;
+    --text-dim:#8b93a3;
+    --text-dimmer:#5b6474;
+    --copper:#c9884c;
+    --copper-dim:#7a5a38;
+    --cyan:#4fb3d9;
+    --aprobada:#5fb894;
+    --aprobada-dim:#2c4a3e;
+    --final:#e0a458;
+    --final-dim:#4a3c25;
+    --recursada:#d1653d;
+    --recursada-dim:#4a2e22;
+    --bloqueada:#333846;
+    --font-mono:'IBM Plex Mono',monospace;
+    --font-sans:'IBM Plex Sans',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    grid-template-rows:auto 1fr;
+    min-height:100vh;
+  }
+  header{
+    grid-column:1/3;
+    padding:18px 24px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    background:linear-gradient(180deg,#161a21,#12151a);
+  }
+  header h1{
+    font-family:var(--font-mono);
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:.5px;
+    margin:0;
+    color:var(--text);
+  }
+  header h1 span{color:var(--copper);}
+  header .sub{
+    font-size:12px;
+    color:var(--text-dim);
+    font-family:var(--font-mono);
+  }
+  .top-actions{display:flex;gap:8px;align-items:center;}
+  .btn{
+    font-family:var(--font-sans);
+    font-size:12px;
+    font-weight:600;
+    padding:7px 12px;
+    border-radius:5px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .btn:hover{border-color:var(--copper-dim);color:var(--text);}
+  .btn.primary{background:var(--copper);border-color:var(--copper);color:#1a1208;}
+  .btn.primary:hover{background:#dc9a5c;}
+  .btn.danger:hover{border-color:var(--recursada);color:var(--recursada);}
+  .btn.small{padding:4px 8px;font-size:11px;}
+
+  aside{
+    border-right:1px solid var(--border);
+    padding:18px;
+    overflow-y:auto;
+    max-height:calc(100vh - 68px);
+    background:var(--panel);
+  }
+  aside h2{
+    font-family:var(--font-mono);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  aside h2::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .progress-box{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  .progress-box .label{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:6px;}
+  .progress-bar{height:8px;border-radius:4px;background:#0d0f13;overflow:hidden;border:1px solid var(--border);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--copper),#e0a458);border-radius:4px;transition:width .3s;}
+  .progress-box .count{font-family:var(--font-mono);font-size:18px;font-weight:600;margin-top:6px;color:var(--text);}
+  .progress-box .count small{font-size:11px;color:var(--text-dim);font-weight:400;}
+  .progress-box.lic .progress-fill{background:linear-gradient(90deg,var(--cyan),#5fb894);}
+
+  .promedio-box{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .promedio-box .label{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);}
+  .promedio-box .value{font-family:var(--font-mono);font-size:26px;font-weight:700;color:var(--copper);}
+  .promedio-box .n{font-size:10.5px;color:var(--text-dimmer);}
+
+  .nota-input{
+    width:44px;background:#0d0f13;color:var(--text);border:1px solid var(--border);
+    border-radius:4px;font-size:11px;padding:3px 4px;font-family:var(--font-mono);text-align:center;
+  }
+
+  .aca-box{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:18px;
+    font-size:12px;
+  }
+  .aca-box .aca-title{font-family:var(--font-mono);color:var(--text-dim);font-size:11px;margin-bottom:8px;}
+  .aca-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;color:var(--text-dim);line-height:1.4;}
+  .aca-row.done{color:var(--aprobada);}
+  .aca-row input{margin-top:2px;}
+
+  .cuatri-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .cuatri-card{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .cuatri-head{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 10px;
+    background:#20252f;
+    border-bottom:1px solid var(--border);
+  }
+  .cuatri-head input.name{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    font-weight:600;
+    padding:3px 4px;
+    border-radius:3px;
+  }
+  .cuatri-head input.name:focus{outline:1px solid var(--copper-dim);background:#161a21;}
+  .icon-btn{
+    background:none;border:none;color:var(--text-dimmer);cursor:pointer;
+    font-size:13px;padding:3px 5px;border-radius:4px;line-height:1;
+  }
+  .icon-btn:hover{color:var(--text);background:#2b3140;}
+  .icon-btn.del:hover{color:var(--recursada);}
+
+  .cuatri-body{padding:8px 10px;display:flex;flex-direction:column;gap:6px;}
+  .materia-row{
+    display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    background:var(--panel);border:1px solid var(--border);border-radius:5px;
+    padding:6px 7px;font-size:11.5px;
+  }
+  .materia-row .mr-name{flex:1 1 100%;color:var(--text);font-family:var(--font-mono);font-size:11px;line-height:1.3;margin-bottom:2px;}
+  .materia-row select{
+    background:#0d0f13;color:var(--text);border:1px solid var(--border);
+    border-radius:4px;font-size:11px;padding:3px 4px;font-family:var(--font-sans);
+  }
+  .materia-row label.tilde{display:flex;align-items:center;gap:3px;color:var(--text-dim);font-size:10px;white-space:nowrap;}
+  .materia-row .del{margin-left:auto;}
+
+  .add-materia-row{display:flex;flex-direction:column;gap:6px;margin-top:2px;}
+  .add-materia-row select{
+    width:100%;background:#0d0f13;color:var(--text);border:1px solid var(--border);
+    border-radius:5px;font-size:11.5px;padding:6px 7px;font-family:var(--font-sans);
+  }
+  .add-materia-row .row2{display:flex;gap:6px;}
+  .add-materia-row .row2 select{flex:1;}
+
+  .new-cuatri{
+    display:flex;gap:6px;margin-bottom:6px;
+  }
+  .new-cuatri input{
+    flex:1;background:var(--panel-2);border:1px solid var(--border);color:var(--text);
+    border-radius:5px;padding:8px 10px;font-size:12.5px;font-family:var(--font-sans);
+  }
+  .new-cuatri input:focus{outline:none;border-color:var(--copper-dim);}
+
+  .legend{margin-top:16px;display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--text-dim);}
+  .legend-item{display:flex;align-items:center;gap:8px;}
+  .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+  main{
+    position:relative;
+    overflow:auto;
+    max-height:calc(100vh - 68px);
+    padding:24px;
+  }
+  #graph-wrap{position:relative;}
+  svg text{font-family:var(--font-mono);user-select:none;}
+  .node-group{cursor:pointer;}
+  .node-rect{
+    stroke-width:1.5px;
+    transition:filter .15s, opacity .2s;
+  }
+  .node-group.dim{opacity:.22;}
+  .node-group:hover .node-rect{filter:brightness(1.18);}
+  .pin{opacity:.55;}
+  .edge-path{fill:none;stroke:var(--copper-dim);stroke-width:1.6px;opacity:.55;transition:opacity .2s,stroke .2s,stroke-width .2s;}
+  .edge-path.highlight{stroke:var(--copper);opacity:1;stroke-width:2.2px;}
+  .edge-path.dim{opacity:.06;}
+  .via{fill:var(--copper-dim);opacity:.6;}
+
+  .detail-panel{
+    position:fixed;
+    right:24px;
+    top:88px;
+    width:300px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,.45);
+    display:none;
+    z-index:20;
+    max-height:calc(100vh - 120px);
+    overflow-y:auto;
+  }
+  .detail-panel.open{display:block;}
+  .detail-panel .dp-close{position:absolute;top:10px;right:10px;}
+  .dp-cod{font-family:var(--font-mono);color:var(--copper);font-size:11px;letter-spacing:.5px;}
+  .dp-name{font-size:15px;font-weight:600;margin:4px 0 10px;line-height:1.3;}
+  .dp-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .badge{
+    font-family:var(--font-mono);font-size:10px;padding:3px 7px;border-radius:4px;
+    border:1px solid var(--border);color:var(--text-dim);
+  }
+  .badge.st{font-weight:600;}
+  .dp-section{margin-bottom:12px;}
+  .dp-section h4{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);margin:0 0 6px;font-family:var(--font-mono);}
+  .dp-req{display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text-dim);}
+  .dp-req .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+  .dp-req.ok{color:var(--text);}
+  .dp-req .rm{margin-left:auto;}
+  .dp-empty{font-size:12px;color:var(--text-dimmer);font-style:italic;}
+  .dp-unlock-count{font-size:22px;font-family:var(--font-mono);font-weight:600;color:var(--copper);}
+  .dp-edit-add{display:flex;gap:5px;margin-top:6px;}
+  .dp-edit-add select{flex:1;background:#0d0f13;color:var(--text);border:1px solid var(--border);border-radius:5px;font-size:11px;padding:5px 6px;font-family:var(--font-sans);}
+  .dp-override-note{font-size:10.5px;color:var(--copper);margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px;background:rgba(201,136,76,.08);border:1px solid var(--copper-dim);padding:5px 7px;border-radius:5px;}
+  .dp-override-note button{font-size:10px;}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#2b3140;border-radius:5px;}
+  ::-webkit-scrollbar-thumb:hover{background:#3a4256;}
+
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr;}
+    aside{max-height:none;border-right:none;border-bottom:1px solid var(--border);}
+    main{max-height:none;}
+    .detail-panel{position:static;width:auto;margin:16px 0 0;}
+  }
+</style>
 </head>
 <body>
-    <button onclick="abrirTodo()">EJECUTAR ENTORNO DE ESTUDIO</button>
+<div class="app">
+  <header>
+    <div>
+      <h1>plan<span>://</span>cursada — Téc./Lic. en Informática (UNAHUR)</h1>
+      <div class="sub">grafo de correlatividades · estado en vivo</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btn-export">Exportar datos</button>
+      <button class="btn" id="btn-import">Importar datos</button>
+      <input type="file" id="file-import" accept="application/json" style="display:none;">
+      <button class="btn danger" id="btn-reset">Reiniciar todo</button>
+    </div>
+  </header>
 
-    <script>
-    const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  <aside>
+    <div class="progress-box">
+      <div class="label">TÍTULO INTERMEDIO — TECNICATURA</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="count" id="progress-count">0 <small>/ 17 materias</small></div>
+    </div>
 
-    async function abrirTodo() {
-        let urls = [
-            'https://campus2026.unahur.edu.ar/my/courses.php',
-            'https://www.wolframalpha.com/',
-            'https://gemini.google.com',
-            'https://drive.google.com',
-            'https://mail.google.com'
-        ];
+    <div class="progress-box lic">
+      <div class="label">LICENCIATURA — PLAN COMPLETO</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill-lic"></div></div>
+      <div class="count" id="progress-count-lic">0 <small>/ 45 materias</small></div>
+    </div>
 
-        const esMobile = window.innerWidth <= 768;
+    <div class="promedio-box">
+      <div>
+        <div class="label">PROMEDIO GENERAL (APROX.)</div>
+        <div class="n" id="promedio-n">sin notas cargadas aún</div>
+      </div>
+      <div class="value" id="promedio-value">—</div>
+    </div>
 
-        if (esMobile) {
-            urls.reverse(); 
-            console.log("Modo Mobile: Lista invertida.");
-        }
+    <div class="aca-box">
+      <div class="aca-title">ACA — ACTIVIDADES CURRICULARES ACREDITABLES (checklist aparte, no conectado al grafo)</div>
+      <div class="aca-row" id="aca-min-row">
+        <span>☐</span>
+        <span>Requisito mínimo: haber aprobado al menos 1 materia</span>
+      </div>
+      <div class="aca-row"><label style="display:flex;gap:6px;"><input type="checkbox" id="aca-c1"> 10 créditos — unidades no incluidas en el plan</label></div>
+      <div class="aca-row"><label style="display:flex;gap:6px;"><input type="checkbox" id="aca-c2"> 10 créditos — experiencias formativas diversas</label></div>
+      <div class="aca-row"><label style="display:flex;gap:6px;"><input type="checkbox" id="aca-c3"> 10 créditos — según definición del Instituto</label></div>
+    </div>
 
-        for (const url of urls) {
-            window.open(url, '_blank');
-            // Unificamos a 300ms para mayor estabilidad en cualquier plataforma
-            await esperar(300); 
-        }
+    <h2>Cuatrimestres</h2>
+    <div class="new-cuatri">
+      <input type="text" id="new-cuatri-name" placeholder="Nombre (ej. 1C 2025, Verano 1 2025...)">
+      <button class="btn primary small" id="btn-add-cuatri">+ Agregar</button>
+    </div>
+    <div class="cuatri-list" id="cuatri-list"></div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--aprobada)"></span> Promocionada / Final aprobado</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--final)"></span> Cursada — final pendiente</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--recursada)"></span> Recursando / a recursar</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--cyan)"></span> Habilitada para cursar</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--bloqueada)"></span> Bloqueada</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--copper);border-radius:50%;width:8px;height:8px;"></span> Ribete = cuenta para título intermedio</div>
+      <div class="legend-item"><span style="color:var(--copper);font-family:var(--font-mono);font-size:11px;">✎</span> Correlativas editadas a mano (a confirmar)</div>
+    </div>
+  </aside>
+
+  <main>
+    <div id="graph-wrap"></div>
+  </main>
+</div>
+
+<div class="detail-panel" id="detail-panel">
+  <button class="icon-btn dp-close" id="dp-close">✕</button>
+  <div class="dp-cod" id="dp-cod"></div>
+  <div class="dp-name" id="dp-name"></div>
+  <div class="dp-badges" id="dp-badges"></div>
+  <div class="dp-section">
+    <h4>Correlativas requeridas</h4>
+    <div id="dp-reqs"></div>
+  </div>
+  <div class="dp-section">
+    <h4>Desbloquea (directas)</h4>
+    <div id="dp-direct"></div>
+  </div>
+  <div class="dp-section">
+    <h4>Total de materias que desbloquea en cascada</h4>
+    <div class="dp-unlock-count" id="dp-cascade-count">0</div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   DATOS FIJOS DEL PLAN (Técnico/a Universitario/a en Programación
+   → Licenciatura en Informática, UNAHUR)
+--------------------------------------------------------- */
+const SUBJECTS = [
+  {cod:1,nombre:"Introducción a lógica y Problemas Computacionales",anio:1,correlativas:[],intermedio:true},
+  {cod:2,nombre:"Matemática para Informática 1",anio:1,correlativas:[],intermedio:true},
+  {cod:3,nombre:"Organización de las Computadoras 1",anio:1,correlativas:[],intermedio:true},
+  {cod:4,nombre:"Cultura y alfabetización digital en la universidad",anio:1,correlativas:[],intermedio:true},
+  {cod:5,nombre:"Tecnología y Sociedad",anio:1,correlativas:[],intermedio:false},
+  {cod:6,nombre:"Inglés",anio:1,correlativas:[],intermedio:true},
+  {cod:7,nombre:"Programación Estructurada",anio:1,correlativas:[1],intermedio:true},
+  {cod:8,nombre:"Matemática para Informática 2",anio:1,correlativas:[2],intermedio:true},
+  {cod:9,nombre:"Lenguajes Informáticos 1",anio:1,correlativas:[1],intermedio:true},
+  {cod:10,nombre:"Organización de Computadoras 2",anio:1,correlativas:[3],intermedio:false},
+  {cod:11,nombre:"Programación con Objetos 1",anio:2,correlativas:[7],intermedio:true},
+  {cod:12,nombre:"Estructuras de Datos",anio:2,correlativas:[7],intermedio:true},
+  {cod:13,nombre:"Bases de Datos",anio:2,correlativas:[1],intermedio:true},
+  {cod:14,nombre:"Matemática para Informática 3",anio:2,correlativas:[8],intermedio:false},
+  {cod:15,nombre:"Redes de Computadoras",anio:2,correlativas:[3],intermedio:false},
+  {cod:16,nombre:"Programación con Objetos II",anio:2,correlativas:[11],intermedio:true},
+  {cod:17,nombre:"Asignatura UNAHUR",anio:2,correlativas:[],intermedio:true,electiva:true},
+  {cod:18,nombre:"Sistemas y organizaciones",anio:2,correlativas:[7],intermedio:true},
+  {cod:19,nombre:"Algoritmos",anio:2,correlativas:[12],intermedio:false},
+  {cod:20,nombre:"Sistemas Operativos",anio:2,correlativas:[3],intermedio:false},
+  {cod:21,nombre:"Construcción de Interfaces de Usuario",anio:3,correlativas:[13,16],intermedio:true},
+  {cod:22,nombre:"Estrategias de Persistencia",anio:3,correlativas:[13,16],intermedio:true},
+  {cod:23,nombre:"Ingeniería de Software 1",anio:3,correlativas:[18],intermedio:true},
+  {cod:24,nombre:"Álgebra Lineal",anio:3,correlativas:[8],intermedio:false},
+  {cod:25,nombre:"Ejercicio Profesional en Tecnología",anio:3,correlativas:[5],intermedio:false},
+  {cod:26,nombre:"Desarrollo de Aplicaciones",anio:3,correlativas:[21,22,23],intermedio:false},
+  {cod:27,nombre:"Laboratorio de Sistemas Operativos y Redes",anio:3,correlativas:[10,15,20],intermedio:false},
+  {cod:28,nombre:"Lenguajes Informáticos 2",anio:3,correlativas:[8,16,19],intermedio:false},
+  {cod:29,nombre:"Arquitectura de Software 1",anio:3,correlativas:[21,22,23],intermedio:false},
+  {cod:30,nombre:"Matemática para Informática 4",anio:3,correlativas:[14,24],intermedio:false},
+  {cod:31,nombre:"Ingeniería de Software 2",anio:4,correlativas:[23],intermedio:false},
+  {cod:32,nombre:"Probabilidad y Estadística",anio:4,correlativas:[30],intermedio:false},
+  {cod:33,nombre:"Lenguajes Informáticos 3",anio:4,correlativas:[7,20],intermedio:false},
+  {cod:34,nombre:"Seguridad de la Información",anio:4,correlativas:[27],intermedio:false},
+  {cod:35,nombre:"Computabilidad y Complejidad",anio:4,correlativas:[19,24],intermedio:false},
+  {cod:36,nombre:"Fundamentos de Redes Neuronales",anio:4,correlativas:[35],intermedio:false},
+  {cod:37,nombre:"Lenguajes Informáticos 4",anio:4,correlativas:[19,28],intermedio:false},
+  {cod:38,nombre:"Formalización de Lenguajes y Generación de Código",anio:4,correlativas:[35],intermedio:false},
+  {cod:39,nombre:"Arquitectura de Software 2",anio:4,correlativas:[29],intermedio:false},
+  {cod:40,nombre:"Práctica Profesional Supervisada",anio:4,correlativas:[26],intermedio:false},
+  {cod:41,nombre:"Gestión de Proyectos de Desarrollo de Software",anio:5,correlativas:[31],intermedio:false},
+  {cod:42,nombre:"Aprendizaje Automático",anio:5,correlativas:[35],intermedio:false},
+  {cod:43,nombre:"Sistemas Distribuidos y Tiempo Real",anio:5,correlativas:[27],intermedio:false},
+  {cod:44,nombre:"Arquitectura de Computadoras",anio:5,correlativas:[27],intermedio:false},
+  {cod:45,nombre:"Proyecto final de Licenciatura",anio:5,correlativas:[37,40],intermedio:false},
+];
+const BY_COD = Object.fromEntries(SUBJECTS.map(s=>[s.cod,s]));
+const INTERMEDIO_TOTAL = SUBJECTS.filter(s=>s.intermedio).length;
+
+const STORAGE_KEY = 'plan-cursada-cuatrimestres';
+const ACA_KEY = 'plan-cursada-aca';
+const OVERRIDES_KEY = 'plan-cursada-correlativas-overrides';
+
+/* ---------------------------------------------------------
+   ESTADO
+--------------------------------------------------------- */
+let state = { cuatrimestres: [] }; // [{id,nombre,materias:[{cod,estado,finalAprobado}]}]
+let acaState = { c1:false, c2:false, c3:false };
+let overrides = {}; // cod -> array de codigos correlativos (reemplaza al valor original del plan)
+let selectedCod = null;
+let saveTimer = null;
+
+/* Correlativas "efectivas": si el usuario editó una materia, usa esa lista;
+   si no, usa la del plan de estudios tal como figura en la resolución. */
+function effectiveCorrelativas(cod){
+  return overrides.hasOwnProperty(cod) ? overrides[cod] : BY_COD[cod].correlativas;
+}
+function isOverridden(cod){ return overrides.hasOwnProperty(cod); }
+
+function uid(){ return 'c'+Math.random().toString(36).slice(2,9); }
+
+/* ---------------------------------------------------------
+   PERSISTENCIA (window.storage con fallback a memoria)
+--------------------------------------------------------- */
+async function loadState(){
+  try{
+    const r = await window.storage.get(STORAGE_KEY, false);
+    if(r && r.value) state = JSON.parse(r.value);
+  }catch(e){ /* no hay datos guardados aún */ }
+  try{
+    const r2 = await window.storage.get(ACA_KEY, false);
+    if(r2 && r2.value) acaState = JSON.parse(r2.value);
+  }catch(e){ /* nada guardado */ }
+  try{
+    const r3 = await window.storage.get(OVERRIDES_KEY, false);
+    if(r3 && r3.value) overrides = JSON.parse(r3.value);
+  }catch(e){ /* nada guardado */ }
+}
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }catch(e){}
+  }, 200);
+}
+function saveAca(){
+  (async ()=>{ try{ await window.storage.set(ACA_KEY, JSON.stringify(acaState), false); }catch(e){} })();
+}
+function saveOverrides(){
+  (async ()=>{ try{ await window.storage.set(OVERRIDES_KEY, JSON.stringify(overrides), false); }catch(e){} })();
+}
+
+/* ---------------------------------------------------------
+   LÓGICA DE ESTADOS / CORRELATIVAS
+--------------------------------------------------------- */
+function computeStatusMap(){
+  const map = {}; // cod -> {estado, finalAprobado, nota, cuatriNombre}
+  state.cuatrimestres.forEach(cu=>{
+    cu.materias.forEach(m=>{
+      map[m.cod] = { estado:m.estado, finalAprobado:!!m.finalAprobado, nota:m.nota, cuatriNombre:cu.nombre };
+    });
+  });
+  return map;
+}
+function isAprobadaEquivalente(cod, statusMap){
+  const s = statusMap[cod];
+  if(!s) return false;
+  if(s.estado==='promocionada') return true;
+  if(s.estado==='final' && s.finalAprobado) return true;
+  return false;
+}
+function isUnlocked(cod, statusMap){
+  const reqs = effectiveCorrelativas(cod);
+  if(!reqs.length) return true;
+  return reqs.every(c=>isAprobadaEquivalente(c, statusMap));
+}
+function nodeState(cod, statusMap){
+  const s = statusMap[cod];
+  if(s){
+    if(s.estado==='promocionada') return 'aprobada';
+    if(s.estado==='final') return s.finalAprobado ? 'aprobada' : 'final';
+    if(s.estado==='recursada') return 'recursada';
+  }
+  return isUnlocked(cod, statusMap) ? 'disponible' : 'bloqueada';
+}
+function directChildren(cod){
+  return SUBJECTS.filter(s=>effectiveCorrelativas(s.cod).includes(cod)).map(s=>s.cod);
+}
+function cascadeChildren(cod){
+  const seen = new Set();
+  const stack = [...directChildren(cod)];
+  while(stack.length){
+    const c = stack.pop();
+    if(seen.has(c)) continue;
+    seen.add(c);
+    directChildren(c).forEach(x=>{ if(!seen.has(x)) stack.push(x); });
+  }
+  return [...seen];
+}
+
+/* ---------------------------------------------------------
+   RENDER: PANEL DE CUATRIMESTRES
+--------------------------------------------------------- */
+function subjectOptionsHtml(){
+  let html = '';
+  for(let a=1;a<=5;a++){
+    html += `<optgroup label="Año ${a}">`;
+    SUBJECTS.filter(s=>s.anio===a).forEach(s=>{
+      html += `<option value="${s.cod}">${String(s.cod).padStart(2,'0')} — ${s.nombre}</option>`;
+    });
+    html += `</optgroup>`;
+  }
+  return html;
+}
+
+function renderCuatriList(){
+  const wrap = document.getElementById('cuatri-list');
+  wrap.innerHTML = '';
+  state.cuatrimestres.forEach((cu, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'cuatri-card';
+
+    const head = document.createElement('div');
+    head.className = 'cuatri-head';
+    head.innerHTML = `
+      <input class="name" type="text" value="${cu.nombre.replace(/"/g,'&quot;')}" data-id="${cu.id}">
+      <button class="icon-btn" data-act="up" data-id="${cu.id}" title="Mover antes">↑</button>
+      <button class="icon-btn" data-act="down" data-id="${cu.id}" title="Mover después">↓</button>
+      <button class="icon-btn del" data-act="del-cuatri" data-id="${cu.id}" title="Eliminar cuatrimestre">✕</button>
+    `;
+    card.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'cuatri-body';
+
+    cu.materias.forEach(m=>{
+      const subj = BY_COD[m.cod];
+      const row = document.createElement('div');
+      row.className = 'materia-row';
+      const showNota = m.estado==='promocionada' || (m.estado==='final' && m.finalAprobado);
+      row.innerHTML = `
+        <span class="mr-name">${String(m.cod).padStart(2,'0')} · ${subj.nombre}</span>
+        <select data-act="estado" data-cuatri="${cu.id}" data-cod="${m.cod}">
+          <option value="recursada" ${m.estado==='recursada'?'selected':''}>Recursada</option>
+          <option value="final" ${m.estado==='final'?'selected':''}>Final (cursada aprob.)</option>
+          <option value="promocionada" ${m.estado==='promocionada'?'selected':''}>Promocionada</option>
+        </select>
+        ${m.estado==='final' ? `<label class="tilde"><input type="checkbox" data-act="tilde" data-cuatri="${cu.id}" data-cod="${m.cod}" ${m.finalAprobado?'checked':''}> final aprob.</label>` : ''}
+        ${showNota ? `<input class="nota-input" type="number" min="1" max="10" step="0.5" placeholder="nota" value="${m.nota??''}" data-act="nota" data-cuatri="${cu.id}" data-cod="${m.cod}">` : ''}
+        <button class="icon-btn del" data-act="del-materia" data-cuatri="${cu.id}" data-cod="${m.cod}" title="Quitar">✕</button>
+      `;
+      body.appendChild(row);
+    });
+
+    const addRow = document.createElement('div');
+    addRow.className = 'add-materia-row';
+    addRow.innerHTML = `
+      <select data-act="new-materia-select" data-cuatri="${cu.id}">
+        <option value="">+ elegir materia...</option>
+        ${subjectOptionsHtml()}
+      </select>
+      <div class="row2">
+        <select data-act="new-materia-estado" data-cuatri="${cu.id}">
+          <option value="recursada">Recursada</option>
+          <option value="final">Final (cursada aprobada)</option>
+          <option value="promocionada">Promocionada</option>
+        </select>
+        <button class="btn small" data-act="add-materia" data-cuatri="${cu.id}">Agregar</button>
+      </div>
+    `;
+    body.appendChild(addRow);
+
+    card.appendChild(body);
+    wrap.appendChild(card);
+  });
+
+  wrap.querySelectorAll('[data-act]').forEach(el=>{
+    const evt = (el.tagName==='SELECT' || el.type==='checkbox' || el.type==='number' || (el.tagName==='INPUT' && el.type==='text')) ? 'change' : 'click';
+    el.addEventListener(evt, onCuatriAction);
+  });
+}
+
+function onCuatriAction(e){
+  const el = e.currentTarget;
+  const act = el.dataset.act;
+  const cuId = el.dataset.cuatri || el.dataset.id;
+
+  if(act==='del-cuatri'){
+    if(confirm('¿Eliminar este cuatrimestre y todas sus materias cargadas?')){
+      state.cuatrimestres = state.cuatrimestres.filter(c=>c.id!==el.dataset.id);
+      afterChange();
     }
+    return;
+  }
+  if(el.tagName==='INPUT' && el.classList.contains('name')){
+    const cu = state.cuatrimestres.find(c=>c.id===el.dataset.id);
+    if(cu){ cu.nombre = el.value || 'Sin nombre'; afterChange(false); }
+    return;
+  }
+  if(act==='up'||act==='down'){
+    const i = state.cuatrimestres.findIndex(c=>c.id===el.dataset.id);
+    const j = act==='up' ? i-1 : i+1;
+    if(j>=0 && j<state.cuatrimestres.length){
+      [state.cuatrimestres[i], state.cuatrimestres[j]] = [state.cuatrimestres[j], state.cuatrimestres[i]];
+      afterChange();
+    }
+    return;
+  }
+  const cu = state.cuatrimestres.find(c=>c.id===cuId);
+  if(!cu) return;
+
+  if(act==='estado'){
+    const cod = Number(el.dataset.cod);
+    const m = cu.materias.find(x=>x.cod===cod);
+    if(m){
+      m.estado = el.value;
+      if(el.value!=='final') m.finalAprobado=false;
+      if(el.value==='recursada') m.nota=undefined;
+      afterChange();
+    }
+  } else if(act==='tilde'){
+    const cod = Number(el.dataset.cod);
+    const m = cu.materias.find(x=>x.cod===cod);
+    if(m){ m.finalAprobado = el.checked; if(!el.checked) m.nota=undefined; afterChange(); }
+  } else if(act==='nota'){
+    const cod = Number(el.dataset.cod);
+    const m = cu.materias.find(x=>x.cod===cod);
+    if(m){
+      const v = parseFloat(el.value);
+      m.nota = (el.value==='' || isNaN(v)) ? undefined : Math.min(10, Math.max(1, v));
+      afterChange(true);
+    }
+  } else if(act==='del-materia'){
+    const cod = Number(el.dataset.cod);
+    cu.materias = cu.materias.filter(x=>x.cod!==cod);
+    afterChange();
+  } else if(act==='add-materia'){
+    const card = el.closest('.cuatri-body');
+    const sel = card.querySelector('[data-act="new-materia-select"]');
+    const estSel = card.querySelector('[data-act="new-materia-estado"]');
+    const cod = Number(sel.value);
+    if(!cod){ return; }
+    if(cu.materias.some(x=>x.cod===cod)){ alert('Esa materia ya está cargada en este cuatrimestre.'); return; }
+    cu.materias.push({cod, estado: estSel.value, finalAprobado:false});
+    afterChange();
+  }
+}
+
+document.getElementById('btn-add-cuatri').addEventListener('click', ()=>{
+  const input = document.getElementById('new-cuatri-name');
+  const nombre = input.value.trim();
+  if(!nombre){ input.focus(); return; }
+  state.cuatrimestres.push({ id: uid(), nombre, materias: [] });
+  input.value = '';
+  afterChange();
+});
+
+/* ---------------------------------------------------------
+   RENDER: GRAFO
+--------------------------------------------------------- */
+const COL_W = 280, NODE_W = 232, NODE_H = 58, ROW_H = 82, PAD_TOP = 30, PAD_LEFT = 30;
+
+function layoutPositions(){
+  const pos = {};
+  for(let a=1;a<=5;a++){
+    const subs = SUBJECTS.filter(s=>s.anio===a);
+    subs.forEach((s,i)=>{
+      pos[s.cod] = { x: PAD_LEFT + (a-1)*COL_W, y: PAD_TOP + i*ROW_H + a%2*0 };
+    });
+  }
+  return pos;
+}
+
+const STATE_COLORS = {
+  aprobada:  {fill:'var(--aprobada-dim)', stroke:'var(--aprobada)', text:'var(--aprobada)'},
+  final:     {fill:'var(--final-dim)', stroke:'var(--final)', text:'var(--final)'},
+  recursada: {fill:'var(--recursada-dim)', stroke:'var(--recursada)', text:'var(--recursada)'},
+  disponible:{fill:'#1a2733', stroke:'var(--cyan)', text:'var(--cyan)'},
+  bloqueada: {fill:'#1c1f27', stroke:'var(--bloqueada)', text:'var(--text-dimmer)'},
+};
+const STATE_LABELS = {
+  aprobada:'Aprobada', final:'Final pendiente', recursada:'Recursando/a recursar',
+  disponible:'Habilitada', bloqueada:'Bloqueada'
+};
+
+function edgePath(x1,y1,x2,y2,sameCol){
+  if(sameCol){
+    const bulge = 46;
+    return `M ${x1} ${y1} C ${x1+bulge} ${y1}, ${x1+bulge} ${y2}, ${x1} ${y2}`;
+  }
+  const dx = Math.max(40, (x2-x1)*0.5);
+  return `M ${x1} ${y1} C ${x1+dx} ${y1}, ${x2-dx} ${y2}, ${x2} ${y2}`;
+}
+
+function renderGraph(){
+  const statusMap = computeStatusMap();
+  const pos = layoutPositions();
+  const maxRows = Math.max(...[1,2,3,4,5].map(a=>SUBJECTS.filter(s=>s.anio===a).length));
+  const width = PAD_LEFT*2 + 5*COL_W + NODE_W - COL_W;
+  const height = PAD_TOP*2 + maxRows*ROW_H;
+
+  let highlightSet = null, edgeHighlightSet = null;
+  if(selectedCod!=null){
+    highlightSet = new Set([selectedCod, ...cascadeChildren(selectedCod)]);
+    edgeHighlightSet = new Set();
+    SUBJECTS.forEach(s=>{
+      effectiveCorrelativas(s.cod).forEach(c=>{
+        if(highlightSet.has(c) && highlightSet.has(s.cod)) edgeHighlightSet.add(c+'-'+s.cod);
+      });
+    });
+  }
+
+  let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // year labels
+  for(let a=1;a<=5;a++){
+    const x = PAD_LEFT + (a-1)*COL_W;
+    svg += `<text x="${x}" y="18" fill="var(--text-dimmer)" font-size="11" letter-spacing="1">AÑO ${a}</text>`;
+  }
+
+  // edges
+  SUBJECTS.forEach(s=>{
+    effectiveCorrelativas(s.cod).forEach(c=>{
+      const p1 = pos[c], p2 = pos[s.cod];
+      const sameCol = p1.x === p2.x;
+      const x1 = p1.x + NODE_W, y1 = p1.y + NODE_H/2;
+      const x2 = sameCol ? p2.x + NODE_W : p2.x, y2 = p2.y + NODE_H/2;
+      const key = c+'-'+s.cod;
+      let cls = 'edge-path';
+      if(edgeHighlightSet){ cls += edgeHighlightSet.has(key) ? ' highlight' : ' dim'; }
+      svg += `<path class="${cls}" d="${edgePath(x1,y1,x2,y2,sameCol)}" marker-end="url(#arrow)"></path>`;
+    });
+  });
+
+  // arrow marker def
+  svg = svg.replace('<svg ', '<svg ').replace('>', `>
+    <defs>
+      <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L6,3 z" fill="var(--copper-dim)"></path>
+      </marker>
+    </defs>`);
+
+  // nodes
+  SUBJECTS.forEach(s=>{
+    const p = pos[s.cod];
+    const st = nodeState(s.cod, statusMap);
+    const col = STATE_COLORS[st];
+    const dimClass = highlightSet && !highlightSet.has(s.cod) ? ' dim' : '';
+    const label = s.nombre.length>34 ? s.nombre.slice(0,32)+'…' : s.nombre;
+    svg += `<g class="node-group${dimClass}" data-cod="${s.cod}" transform="translate(${p.x},${p.y})">
+      <rect class="node-rect" x="0" y="0" width="${NODE_W}" height="${NODE_H}" rx="7"
+        fill="${col.fill}" stroke="${col.stroke}"></rect>
+      <rect x="0" y="0" width="4" height="${NODE_H}" rx="2" fill="${col.stroke}"></rect>
+      <rect class="pin" x="-3" y="14" width="6" height="8" fill="${col.stroke}"></rect>
+      <rect class="pin" x="-3" y="${NODE_H-22}" width="6" height="8" fill="${col.stroke}"></rect>
+      <rect class="pin" x="${NODE_W-3}" y="14" width="6" height="8" fill="${col.stroke}"></rect>
+      <rect class="pin" x="${NODE_W-3}" y="${NODE_H-22}" width="6" height="8" fill="${col.stroke}"></rect>
+      <text x="12" y="20" fill="var(--copper)" font-size="10.5" font-weight="600">M${String(s.cod).padStart(2,'0')}${s.electiva?' · ELECTIVA':''}</text>
+      <text x="12" y="36" fill="var(--text)" font-size="11.5" font-family="var(--font-sans)">${label}</text>
+      <text x="12" y="50" fill="${col.text}" font-size="10" letter-spacing=".3">${STATE_LABELS[st]}</text>
+      ${s.intermedio ? `<circle cx="${NODE_W-14}" cy="14" r="5" fill="var(--copper)"></circle>` : ''}
+      ${isOverridden(s.cod) ? `<text x="${NODE_W-30}" y="18" fill="var(--copper)" font-size="11">✎</text>` : ''}
+    </g>`;
+  });
+
+  svg += `</svg>`;
+  document.getElementById('graph-wrap').innerHTML = svg;
+
+  document.querySelectorAll('.node-group').forEach(g=>{
+    g.addEventListener('click', ()=>{
+      const cod = Number(g.dataset.cod);
+      selectedCod = (selectedCod===cod) ? null : cod;
+      renderGraph();
+      if(selectedCod!=null) openDetail(selectedCod); else closeDetail();
+    });
+  });
+}
+
+/* ---------------------------------------------------------
+   PANEL DE DETALLE
+--------------------------------------------------------- */
+function openDetail(cod){
+  const statusMap = computeStatusMap();
+  const s = BY_COD[cod];
+  const st = nodeState(cod, statusMap);
+  document.getElementById('dp-cod').textContent = 'M'+String(cod).padStart(2,'0')+' — AÑO '+s.anio;
+  document.getElementById('dp-name').textContent = s.nombre;
+
+  const badges = [];
+  badges.push(`<span class="badge st" style="color:${STATE_COLORS[st].text};border-color:${STATE_COLORS[st].stroke}">${STATE_LABELS[st]}</span>`);
+  if(statusMap[cod] && statusMap[cod].nota!=null) badges.push(`<span class="badge" style="color:var(--copper);border-color:var(--copper-dim)">Nota: ${statusMap[cod].nota}</span>`);
+  if(s.intermedio) badges.push(`<span class="badge" style="color:var(--copper);border-color:var(--copper-dim)">Título intermedio</span>`);
+  if(s.electiva) badges.push(`<span class="badge">Electiva — cualquier momento</span>`);
+  document.getElementById('dp-badges').innerHTML = badges.join('');
+
+  const reqs = effectiveCorrelativas(cod);
+  const reqsEl = document.getElementById('dp-reqs');
+  let reqsHtml = '';
+  if(!reqs.length){
+    reqsHtml = `<div class="dp-empty">Sin correlativas — se puede cursar en cualquier momento.</div>`;
+  } else {
+    reqsHtml = reqs.map(c=>{
+      const ok = isAprobadaEquivalente(c, statusMap);
+      const cs = BY_COD[c];
+      return `<div class="dp-req ${ok?'ok':''}"><span class="dot" style="background:${ok?'var(--aprobada)':'var(--bloqueada)'}"></span>M${String(c).padStart(2,'0')} · ${cs.nombre}<button class="icon-btn del rm" data-edit-act="rm-req" data-cod="${c}">✕</button></div>`;
+    }).join('');
+  }
+  const addOptions = SUBJECTS.filter(x=>x.cod!==cod && !reqs.includes(x.cod))
+    .map(x=>`<option value="${x.cod}">M${String(x.cod).padStart(2,'0')} — ${x.nombre}</option>`).join('');
+  reqsHtml += `<div class="dp-edit-add">
+      <select id="dp-add-req-select"><option value="">+ agregar correlativa...</option>${addOptions}</select>
+      <button class="btn small" id="dp-add-req-btn">Agregar</button>
+    </div>`;
+  if(isOverridden(cod)){
+    reqsHtml += `<div class="dp-override-note"><span>✎ Editado a mano — a confirmar en rectoría</span><button class="btn small" id="dp-reset-req">Restablecer</button></div>`;
+  }
+  reqsEl.innerHTML = reqsHtml;
+
+  reqsEl.querySelectorAll('[data-edit-act="rm-req"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const newReqs = effectiveCorrelativas(cod).filter(x=>x!==Number(btn.dataset.cod));
+      overrides[cod] = newReqs;
+      saveOverrides();
+      renderGraph();
+      openDetail(cod);
+    });
+  });
+  const addBtn = document.getElementById('dp-add-req-btn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    const sel = document.getElementById('dp-add-req-select');
+    const newCod = Number(sel.value);
+    if(!newCod) return;
+    const newReqs = [...effectiveCorrelativas(cod), newCod];
+    overrides[cod] = newReqs;
+    saveOverrides();
+    renderGraph();
+    openDetail(cod);
+  });
+  const resetBtn = document.getElementById('dp-reset-req');
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{
+    delete overrides[cod];
+    saveOverrides();
+    renderGraph();
+    openDetail(cod);
+  });
+
+  const direct = directChildren(cod);
+  const directEl = document.getElementById('dp-direct');
+  directEl.innerHTML = direct.length
+    ? direct.map(c=>`<div class="dp-req">M${String(c).padStart(2,'0')} · ${BY_COD[c].nombre}</div>`).join('')
+    : `<div class="dp-empty">No es correlativa de ninguna otra materia.</div>`;
+
+  document.getElementById('dp-cascade-count').textContent = cascadeChildren(cod).length;
+  document.getElementById('detail-panel').classList.add('open');
+}
+function closeDetail(){ document.getElementById('detail-panel').classList.remove('open'); }
+document.getElementById('dp-close').addEventListener('click', ()=>{ selectedCod=null; closeDetail(); renderGraph(); });
+
+/* ---------------------------------------------------------
+   PROGRESO TÍTULO INTERMEDIO Y ACA
+--------------------------------------------------------- */
+function renderProgress(){
+  const statusMap = computeStatusMap();
+
+  const tecDone = SUBJECTS.filter(s=>s.intermedio && isAprobadaEquivalente(s.cod, statusMap)).length;
+  document.getElementById('progress-fill').style.width = (tecDone/INTERMEDIO_TOTAL*100)+'%';
+  document.getElementById('progress-count').innerHTML = `${tecDone} <small>/ ${INTERMEDIO_TOTAL} materias (${Math.round(tecDone/INTERMEDIO_TOTAL*100)}%)</small>`;
+
+  const licDone = SUBJECTS.filter(s=>isAprobadaEquivalente(s.cod, statusMap)).length;
+  document.getElementById('progress-fill-lic').style.width = (licDone/SUBJECTS.length*100)+'%';
+  document.getElementById('progress-count-lic').innerHTML = `${licDone} <small>/ ${SUBJECTS.length} materias (${Math.round(licDone/SUBJECTS.length*100)}%)</small>`;
+
+  const notas = SUBJECTS
+    .map(s=>statusMap[s.cod])
+    .filter(s=>s && s.nota!=null && !isNaN(s.nota));
+  const promedioEl = document.getElementById('promedio-value');
+  const promedioN = document.getElementById('promedio-n');
+  if(notas.length){
+    const avg = notas.reduce((a,b)=>a+Number(b.nota),0) / notas.length;
+    promedioEl.textContent = avg.toFixed(2);
+    promedioN.textContent = `sobre ${notas.length} materia${notas.length===1?'':'s'} con nota cargada`;
+  } else {
+    promedioEl.textContent = '—';
+    promedioN.textContent = 'sin notas cargadas aún';
+  }
+
+  const anyAprobada = licDone > 0;
+  const row = document.getElementById('aca-min-row');
+  row.classList.toggle('done', anyAprobada);
+  row.querySelector('span').textContent = anyAprobada ? '☑' : '☐';
+}
+function renderAca(){
+  document.getElementById('aca-c1').checked = acaState.c1;
+  document.getElementById('aca-c2').checked = acaState.c2;
+  document.getElementById('aca-c3').checked = acaState.c3;
+}
+['aca-c1','aca-c2','aca-c3'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', e=>{
+    acaState[id.replace('aca-','')] = e.target.checked;
+    saveAca();
+  });
+});
+
+/* ---------------------------------------------------------
+   EXPORT / IMPORT / RESET
+--------------------------------------------------------- */
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify({state, acaState, overrides}, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'plan_cursada_backup.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('btn-import').addEventListener('click', ()=>{
+  document.getElementById('file-import').click();
+});
+document.getElementById('file-import').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(data.state) state = data.state;
+      if(data.acaState) acaState = data.acaState;
+      if(data.overrides) overrides = data.overrides;
+      afterChange();
+      renderAca();
+    }catch(err){ alert('No se pudo leer el archivo. ¿Es un backup válido exportado desde esta misma herramienta?'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  if(confirm('Esto borra todos los cuatrimestres cargados. ¿Continuar?')){
+    state = { cuatrimestres: [] };
+    selectedCod = null;
+    closeDetail();
+    afterChange();
+  }
+});
+
+/* ---------------------------------------------------------
+   INIT
+--------------------------------------------------------- */
+function afterChange(persist=true){
+  renderCuatriList();
+  renderGraph();
+  renderProgress();
+  if(selectedCod!=null) openDetail(selectedCod);
+  if(persist) saveState();
+}
+
+(async function init(){
+  await loadState();
+  renderAca();
+  afterChange(false);
+})();
 </script>
 </body>
 </html>
